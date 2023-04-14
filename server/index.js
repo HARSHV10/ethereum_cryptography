@@ -2,14 +2,20 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const port = 3042;
+const secp = require('ethereum-cryptography/secp256k1');
+const {toHex,utf8ToBytes} = require('ethereum-cryptography/utils');
+
 
 app.use(cors());
 app.use(express.json());
 
 const balances = {
-  "03fa09ad22d80f75ce23232a574ea3a9d4188a1fa805b635957616942de58305f4": 100,
-  "03d7edab0816480d587c8c0e8ebe470aa949381ffc414d40258bcbe3e802a97962": 50,
-  "02b1b4cdbd51bbd4027510dafc6c56062f4cdc4679518784713d70d3bd2988320e": 75,
+  "02206e657cae9e9af1da34a058c203276fb0017f38610825a65a7b6eedae240e11": 100,
+  // 1e7e765589bdcc55d1a3331687781bebc9663a666b3a417d38cc77d2daf1e43e
+  "03a9d0bc27182bfca515c0107e74e746542742d81cd6d1887f37385a0000c4e8d6": 50,
+  // c54dbb773d59a7d63db0fa4b5e35972c4b0434f8757942ed1344776393657e23
+  "03d25fc46b949e61780ba5b7fd06a66336fbdf37724b35109a415bb752b8e4c0f2": 75,
+  // d12a9cb335592a47536e14807f4fcb85cecaf37782ca676f6ffcf3fb3005f2ee
 };
 
 app.get("/balance/:address", (req, res) => {
@@ -19,8 +25,14 @@ app.get("/balance/:address", (req, res) => {
 });
 
 app.post("/send", (req, res) => {
-  const { sender, recipient, amount } = req.body;
-
+  const { sender, recipient,hash,amount,r,s} = req.body;
+console.log(s)
+console.log(r)
+console.log(hash);
+// const issigned = secp.secp256k1.verify({r:r,s:s})
+const imp =utf8ToBytes("c54dbb773d59a7d63db0fa4b5e35972c4b0434f8757942ed1344776393657e23")
+const issigned = secp.secp256k1.verify({r:r,s:s},imp,sender);
+console.log(issigned);
   setInitialBalance(sender);
   setInitialBalance(recipient);
 
